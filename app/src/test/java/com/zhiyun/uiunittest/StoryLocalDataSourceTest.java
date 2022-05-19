@@ -16,6 +16,7 @@ import com.zhiyun.uiunittest.data.entity.Story;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Describe:
@@ -31,7 +32,7 @@ public class StoryLocalDataSourceTest {
     @Before
     public void initData(){
         //mock一个Story对象
-        mStoryDao = mock(StoryDao.class);
+        mStoryDao = Mockito.mock(StoryDao.class);
         //设置桩
         when(mStoryDao.getStoryById(1)).thenReturn(new Story(1, "剧本", "www.baidu.com"));
         when(mStoryDao.updateStory(any(Story.class))).thenReturn(true);
@@ -45,7 +46,7 @@ public class StoryLocalDataSourceTest {
         boolean result = mStoryLocalDataSource.updateStory(new Story(1,"旧数据","旧地址"));
         assertTrue("此处应该为true",result);
 
-        verify(mStoryDao,times(1)).getStoryById(anyInt());
+        verify(mStoryDao,times(2)).getStoryById(anyInt());
         verify(mStoryDao,times(1)).updateStory(any(Story.class));
 
     }
@@ -56,7 +57,7 @@ public class StoryLocalDataSourceTest {
 //        System.out.println(story);
 
         boolean result = mStoryLocalDataSource.updateStory(new Story(2,"旧数据","旧地址"));
-        assertTrue("此处应该为true",result);
+        assertFalse("此处应该为false",result);
 
         verify(mStoryDao,times(1)).getStoryById(anyInt());
         verify(mStoryDao,times(0)).updateStory(any(Story.class));

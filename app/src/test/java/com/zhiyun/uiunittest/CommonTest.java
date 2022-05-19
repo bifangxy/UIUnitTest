@@ -4,11 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.isNotNull;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -21,12 +20,18 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.zhiyun.uiunittest.data.StoryLocalDataSource;
+import com.zhiyun.uiunittest.data.UnitTest;
+import com.zhiyun.uiunittest.data.dao.StoryDao;
+import com.zhiyun.uiunittest.data.entity.Story;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -72,6 +77,8 @@ public class CommonTest {
         mMockList.add("two");
         mMockList.add("three");
 
+        System.out.println("---" + mMockList.get(0));
+
 //        verify(mMockList).add(anyString());
 
 //        verify(mMockList,times(2)).add("two");
@@ -93,9 +100,9 @@ public class CommonTest {
         when(mMockList.get(0)).thenReturn("two");
         when(mMockList.get(1)).thenThrow(new RuntimeException());
 
-        System.out.println(mMockList.get(0));
+//        System.out.println(mMockList.get(0));
 //        System.out.println(mMockList.get(1));
-//        System.out.println(mMockList.get(999));
+        System.out.println(mMockList.get(999));
     }
 
 
@@ -104,10 +111,20 @@ public class CommonTest {
      */
     @Test
     public void paramsMatch() {
-        when(mMockList.get(anyInt())).thenReturn("element");
-        when(mMockList.contains(anyString())).thenReturn(true);
-        assertTrue(mMockList.contains("das"));
-        System.out.println(mMockList.get(12));
+//        when(mMockList.get(12)).thenReturn("element1");
+//        when(mMockList.get(anyInt())).thenReturn("element");
+//        when(mMockList.contains(anyString())).thenReturn(true);
+        when(mMockList.contains(isA(String.class))).thenReturn(true);
+//        assertTrue(mMockList.contains("das"));
+//        System.out.println(mMockList.get(12));
+//        System.out.println(mMockList.get(10));
+
+
+        UnitTest unitTest = mock(UnitTest.class);
+//        when(unitTest.getDescribeCount(anyInt(), "describe")).thenReturn(1);
+        when(unitTest.getDescribeCount(anyInt(), anyString())).thenReturn(1);
+//        System.out.println(unitTest.getDescribeCount(anyInt(), eq("describe")));
+        System.out.println(unitTest.getDescribeCount(1, "1"));
     }
 
 
@@ -116,8 +133,8 @@ public class CommonTest {
      */
     @Test
     public void voidThrow(){
-        doThrow(new RuntimeException()).when(mMockList).clear();
-        mMockList.clear();
+        doThrow(new RuntimeException("DASDASD")).when(mMockList).add("1");
+        mMockList.add("d");
     }
 
     /**
@@ -142,10 +159,10 @@ public class CommonTest {
 
         inOrder = Mockito.inOrder(firstMock,secondMock);
 
-        inOrder.verify(firstMock).add("first");
-//        inOrder.verify(firstMock,never()).add("one");
+//        inOrder.verify(secondMock).add("second");
+//        inOrder.verify(firstMock).add("first");
 //        inOrder.verify(secondMock,never()).add("one");
-        inOrder.verify(secondMock).add("second");
+//        inOrder.verify(firstMock,never()).add("one");
     }
 
 
@@ -156,11 +173,12 @@ public class CommonTest {
     public void interactionNeverHappened(){
         verifyNoInteractions(mMockList);
 
-        mMockList.add("one");
-        verify(mMockList).add("one");
+//        mMockList.add("one");
+//        mMockList.clear();
+        verify(mMockList,never()).add("one");
+        verifyNoInteractions(mMockList);
 //        verifyNoMoreInteractions(mMockList);
 
-        verifyNoInteractions(mMockList);
     }
 
     /**
@@ -170,8 +188,10 @@ public class CommonTest {
     public void findingRedundantInvocations(){
         mMockList.add("one");
         mMockList.add("two");
+//        mMockList.remove("one");
         verify(mMockList,times(2)).add(anyString());
-//        verify(mMockList).add(anyString());
+        mMockList.add("two");
+        verify(mMockList,times(3)).add(anyString());
         verifyNoMoreInteractions(mMockList);
     }
 
@@ -179,15 +199,16 @@ public class CommonTest {
     /**
      * 根据调用顺序设置不同的stubbing
      */
-    @Test
+    @Test()
     public void stubbingConsecutiveCalls() {
-//        when(mMockList.get(anyInt())).thenThrow(new RuntimeException())
-//                .thenReturn("result");
+        when(mMockList.get(1))
+                .thenReturn("one")
+                .thenReturn("result");
 
-        when(mMockList.get(anyInt())).thenReturn("1").thenReturn("2");
+//        when(mMockList.get(anyInt())).thenReturn("1").thenReturn("2");
 //        mMockList.get(0);
         System.out.println(mMockList.get(1));
-        System.out.println(mMockList.get(2));
+        System.out.println(mMockList.get(1));
     }
 
 
@@ -205,9 +226,9 @@ public class CommonTest {
         System.out.println(mMockList.get(1));
 
 
-        doNothing()
-                .doThrow(new RuntimeException())
-                .when(mMockList).clear();
+//        doNothing()
+//                .doThrow(new RuntimeException())
+//                .when(mMockList).clear();
 //        System.out.println(mMockList.get(0));
     }
 
@@ -238,9 +259,11 @@ public class CommonTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
                 Object mock = invocation.getMock();
-                return null;
+                return "callback " + Arrays.toString(args);
             }
         }).when(mMockList).get(0);
+
+        System.out.println(mMockList.get(0));
     }
 
 
@@ -250,15 +273,20 @@ public class CommonTest {
     @Test
     public void spyTest(){
         List list = new LinkedList();
+        list.add("1");
         List spy  = Mockito.spy(list);
 
-        when(spy.size()).thenReturn(100);
+//        when(spy.size()).thenReturn(100);
         spy.add("one");
         spy.add("two");
 
         System.out.println(spy.get(0));
 
         System.out.println(spy.size());
+
+        System.out.println(list.size());
+
+
     }
 
 
@@ -267,23 +295,22 @@ public class CommonTest {
      */
     @Test
     public void returnDefault(){
-        LinkedList<String> list = mock(LinkedList.class,Mockito.RETURNS_SMART_NULLS);
+//        LinkedList<String> list = mock(LinkedList.class,Mockito.RETURNS_SMART_NULLS);
 
         LinkedList<String> list1 = mock(LinkedList.class, invocation -> {
-//            Class<?> returnType = invocation.getMethod().getReturnType();
-//            System.out.println(returnType);
-//            if(returnType == Object.class ){
-//                return "one";
-//            }else if (returnType == int.class){
-//                return 1;
-//            }
-//            return null;
+            Class<?> returnType = invocation.getMethod().getReturnType();
+            System.out.println(returnType);
+            if(returnType == Object.class ){
+                return "two";
+            }else if (returnType == int.class){
+                return 3;
+            }
             return "one";
         });
 //        when(list1.get(1)).thenReturn("two");
 //        System.out.println(list1.get(1));
-        System.out.println(list1.get(2));
-//        System.out.println(list1.indexOf("das"));
+//        System.out.println(list1.get(2));
+        System.out.println(list1.indexOf("das"));
     }
 
 
@@ -293,9 +320,8 @@ public class CommonTest {
     @Test
     public void capturingArguments(){
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
-        mMockList.add("one");
+        mMockList.add("two");
         verify(mMockList).add(argumentCaptor.capture());
-
         assertEquals("one",argumentCaptor.getValue());
     }
 
@@ -315,10 +341,11 @@ public class CommonTest {
     }
 
     @Test
-    public void timeOut(){
+    public void timeOut() throws InterruptedException {
         mMockList.add("one");
-        verify(mMockList,timeout(100)).add("one");
-
+        System.out.println(System.currentTimeMillis());
+        verify(mMockList,timeout(10000)).add("one");
+        System.out.println(System.currentTimeMillis());
     }
 
     @Test
@@ -331,6 +358,22 @@ public class CommonTest {
     }
 
 
+
+    @Mock
+    StoryDao mStoryao2;
+
+    @Mock
+    StoryDao mStoryao;
+
+    @InjectMocks
+    StoryLocalDataSource mStoryLocalDataSource;
+
+    @Test
+    public void injectMocksTest(){
+        when(mStoryao.getStoryById(1)).thenReturn(new Story(1,"injectMocksTest","www.baidu.com"));
+        when(mStoryao2.getStoryById(1)).thenReturn(new Story(2,"injectMocksTest","www.baidu.com"));
+        System.out.println(mStoryLocalDataSource.getStoryById(1).toString());
+    }
 
 
 

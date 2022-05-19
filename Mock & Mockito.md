@@ -66,6 +66,9 @@
 
 - 超时验证
 
+- @InjectMock
+
+官方文档链接：https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#stubbing
 
 
 
@@ -76,8 +79,6 @@
 
 
 
-
-https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#stubbing
 
 
 

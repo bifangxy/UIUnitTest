@@ -22,4 +22,8 @@ public class StoryLocalDataSource {
         }
         return mStoryDao.updateStory(story);
     }
+
+    public Story getStoryById(int id) {
+        return mStoryDao.getStoryById(id);
+    }
 }
